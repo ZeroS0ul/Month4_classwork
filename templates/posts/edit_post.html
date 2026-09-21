@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h2 class="card-title text-center mb-4">Редактировать пост</h2>
+
+          <!-- Общие ошибки формы -->
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+              {% endfor %}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endif %}
+
+          <form method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            <!-- Заголовок -->
+            <div class="mb-3">
+              <label for="id_title" class="form-label">Заголовок</label>
+              <input 
+                type="text" 
+                class="form-control {% if form.title.errors %}is-invalid{% endif %}" 
+                id="id_title" 
+                name="title" 
+                value="{{ form.title.value|default:post.title|default:'' }}" 
+                placeholder="Введите заголовок поста" 
+                required
+              >
+              {% for error in form.title.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <!-- Категория -->
+            <div class="mb-3">
+              <label for="id_category" class="form-label">Категория</label>
+              <select 
+                class="form-select {% if form.category.errors %}is-invalid{% endif %}" 
+                id="id_category" 
+                name="category" 
+                required
+              >
+                <option value="" disabled>Выберите категорию...</option>
+                {% for category in form.category.field.queryset|default:categories %}
+                  <option 
+                    value="{{ category.id }}" 
+                    {% if form.category.value|stringformat:"s" == category.id|stringformat:"s" or post.category_id|stringformat:"s" == category.id|stringformat:"s" %}selected{% endif %}
+                  >
+                    {{ category.name }}
+                  </option>
+                {% endfor %}
+              </select>
+              {% for error in form.category.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <!-- Теги -->
+            <div class="mb-3">
+              <label for="id_tags" class="form-label">Теги</label>
+              <select 
+                class="form-select {% if form.tags.errors %}is-invalid{% endif %}" 
+                id="id_tags" 
+                name="tags" 
+                multiple 
+                size="4"
+              >
+                {% for tag in form.tags.field.queryset|default:tags %}
+                  <option 
+                    value="{{ tag.id }}" 
+                    {% if form.tags.value and tag.id in form.tags.value or tag.id|stringformat:"s" in form.tags.value or tag in post.tags.all %}selected{% endif %}
+                  >
+                    {{ tag.name }}
+                  </option>
+                {% endfor %}
+              </select>
+              <div class="form-text">Удерживайте <kbd>Ctrl</kbd> (или <kbd>Cmd</kbd> на Mac), чтобы выбрать несколько тегов.</div>
+              {% for error in form.tags.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <!-- Текст поста -->
+            <div class="mb-3">
+              <label for="id_text" class="form-label">Текст поста</label>
+              <textarea 
+                class="form-control {% if form.text.errors %}is-invalid{% endif %}" 
+                id="id_text" 
+                name="text" 
+                rows="5" 
+                placeholder="О чем хотите рассказать?" 
+                required
+              >{{ form.text.value|default:post.text|default:'' }}</textarea>
+              {% for error in form.text.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <!-- Изображение -->
+            <div class="mb-4">
+              <label for="id_image" class="form-label">Изображение</label>
+              
+              {% if post.image %}
+                <div class="mb-2">
+                  <div class="text-muted small mb-1">Текущее изображение:</div>
+                  <img 
+                    src="{{ post.image.url }}" 
+                    alt="{{ post.title }}" 
+                    class="img-thumbnail d-block" 
+                    style="max-height: 140px; object-fit: cover;"
+                  >
+                </div>
+              {% endif %}
+
+              <input 
+                class="form-control {% if form.image.errors %}is-invalid{% endif %}" 
+                type="file" 
+                id="id_image" 
+                name="image" 
+                accept="image/*"
+              >
+              <div class="form-text">Загрузите новый файл только если хотите заменить текущий.</div>
+              {% for error in form.image.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <!-- Кнопки управления -->
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary btn-lg flex-grow-1">Сохранить изменения</button>
+              <a href="{% url 'post_detail' post.id %}" class="btn btn-outline-secondary btn-lg">Отмена</a>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+<a href="{% url 'post_list' %}">Главная</a>
+{% block content %}
+<div class="container py-5">
+
+  <!-- Блок статуса поиска -->
+  {% if request.GET.search %}
+    <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+      <h4 class="h5 mb-0 text-secondary">
+        Результаты по запросу: <span class="text-dark fw-bold">«{{ request.GET.search }}»</span>
+      </h4>
+      <a href="{% url 'post_list' %}" class="btn btn-outline-secondary btn-sm">
+        Сбросить поиск
+      </a>
+    </div>
+  {% endif %}
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for post in posts %}
+      <div class="col">
+        <div class="card h-100 shadow-sm">
+          {% if post.image %}
+            <img 
+              src="{{ post.image.url|default:post.image }}" 
+              class="card-img-top object-fit-cover" 
+              alt="{{ post.title }}"
+              style="height: 220px;"
+            >
+          {% else %}
+            <img 
+              src="{% static 'default.png' %}" 
+              class="card-img-top object-fit-cover" 
+              alt="Default image"
+              style="height: 220px;"
+            >
+          {% endif %}
+          
+          <div class="card-body d-flex flex-column">
+            {% if post.category %}
+              <div class="mb-2">
+                <span class="badge bg-primary-subtle text-primary-emphasis border border-primary-subtle">
+                  {{ post.category.name }}
+                </span>
+              </div>
+            {% endif %}
+
+            <h5 class="card-title">{{ post.title }}</h5>
+            
+            <p class="card-text text-secondary flex-grow-1">
+              {{ post.text|truncatewords:25 }}
+            </p>
+            
+            <a href="{% url 'post_detail' post.id %}" class="btn btn-outline-primary btn-sm align-self-start mt-2">
+              Читать далее
+            </a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <!-- Отображается, если список posts пуст -->
+      <div class="col-12 py-5 text-center">
+        <div class="text-muted mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+          </svg>
+        </div>
+        <h5>Постов не найдено</h5>
+        {% if request.GET.search %}
+          <p class="text-secondary">По запросу «{{ request.GET.search }}» ничего не удалось найти.</p>
+          <a href="{% url 'post_list' %}" class="btn btn-primary btn-sm">Показать все посты</a>
+        {% else %}
+          <p class="text-secondary">Записей пока нет.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
