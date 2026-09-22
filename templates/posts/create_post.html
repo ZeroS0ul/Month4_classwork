@@ -1,53 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% load static %}
-<div class="container py-5">
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-    {% for post in posts %}
-      <div class="col">
-        <div class="card h-100 shadow-sm">
-          {% if post.image %}
-            <!-- Для Django используйте post.image.url, для статических путей — post.image -->
-            <img 
-              src="{{ post.image.url|default:post.image }}" 
-              class="card-img-top object-fit-cover" 
-              alt="{% static 'default.png' %}"
-              style="height: 220px;"
-            >
-        {% else %}
-            <img 
-              src="{% static 'default.png' %}" 
-              class="card-img-top object-fit-cover" 
-              alt="{% static 'default.png' %}"
-              style="height: 220px;"
-            >
-          {% endif %}
-          
-          <div class="card-body d-flex flex-column">
-            {% if post.category %}
-              <div class="mb-2">
-                <span class="badge bg-primary-subtle text-primary-emphasis border border-primary-subtle">
-                  {{ post.category.name }}
-                </span>
-              </div>
-            {% endif %}
-
-            <h5 class="card-title">{{ post.title }}</h5>
+<div class="row justify-content-center py-4">
+    <div class="col-md-8">
+        <h2 class="mb-4">Создать новый пост</h2>
+        
+        <!-- enctype="multipart/form-data" обязателен для загрузки картинок -->
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
             
-            <!-- Ограничение длины текста: truncatewords для Django, truncate(120) для Jinja2 -->
-            <p class="card-text text-secondary flex-grow-1">
-              {{ post.text|truncatewords:25 }}
-            </p>
-            
-            <a href="{% url 'post_detail' post.id %}" class="btn btn-outline-primary btn-sm align-self-start mt-2">
-              Читать далее
-            </a>
-          </div>
-        </div>
-      </div>
+            {{ form.as_p }}
 
-    {% endfor %}
-  </div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Опубликовать</button>
+                <a href="{% url 'post_list' %}" class="btn btn-secondary ms-2">Отмена</a>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

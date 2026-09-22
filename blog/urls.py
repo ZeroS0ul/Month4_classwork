@@ -13,12 +13,12 @@ from posts.views import (
     CreatePostView,
     EditPostView,
     HelloWorldView,
+    MyNameView,
     MyPostsView,
     PostDeleteView,
     PostDetailView,
     PostListView,
-    my_name,
-    say_name,
+    SayNameView,
 )
 
 from user.views import register
@@ -30,8 +30,8 @@ urlpatterns = [
 
     # Простые страницы
     path("hello/", HelloWorldView.as_view()),
-    path("name/", my_name),
-    path("name/<str:name>", say_name),
+    path("name/", MyNameView.as_view()),
+    path("name/<str:name>", SayNameView.as_view()),
 
     # Посты
     path(

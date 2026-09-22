@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Мои посты</h2>
+
+    {% if posts %}
+        <div class="posts-list">
+            {% for post in posts %}
+                <article class="post-item" style="margin-bottom: 24px; border-bottom: 1px solid #ddd; padding-bottom: 16px;">
+                    <h3>
+                        <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                    </h3>
+
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" style="max-width: 300px; display: block; margin: 10px 0;">
+                    {% endif %}
+
+                    <p>{{ post.text|truncatewords:30 }}</p>
+
+                    <div class="post-meta" style="font-size: 0.9em; color: #666;">
+                        <span>Категория: {{ post.category.name|default:"Без категории" }}</span> | 
+                        <span>Просмотров: {{ post.views }}</span> | 
+                        <span>Дата: {{ post.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+
+                    <div class="actions" style="margin-top: 10px;">
+                        <a href="{% url 'edit_post' post.pk %}">Редактировать</a> | 
+                        <a href="{% url 'post_delete' post.pk %}" style="color: red;">Удалить</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>У вас пока нет созданных постов.</p>
+        <a href="{% url 'create_post' %}">Создать пост</a>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,26 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="card-title mb-4">
+                    {% if object %}Редактировать пост{% else %}Новый пост{% endif %}
+                </h2>
+                
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {{ form.as_p }}
 
-<h1>Удалить пост?</h1>
-
-<p>
-    Вы действительно хотите удалить
-    <strong>{{ object.title }}</strong>?
-</p>
-
-<form method="post">
-
-    {% csrf_token %}
-
-    <button type="submit">
-        Да, удалить
-    </button>
-
-    <a href="{% url 'my_posts' %}">
-        Отмена
-    </a>
-
-</form>
-
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            {% if object %}Сохранить изменения{% else %}Опубликовать{% endif %}
+                        </button>
+                        <a href="{% url 'my_posts' %}" class="btn btn-outline-secondary">
+                            Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
